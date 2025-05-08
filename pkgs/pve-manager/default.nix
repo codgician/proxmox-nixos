@@ -137,6 +137,10 @@ perl538.pkgs.toPerlModule (
         -e "s|=> 'ceph|=> '${ceph}/bin/ceph|" \
         -e "s|ceph-authtool|${ceph}/bin/ceph-authtool|"
 
+      # Patch OpenVSwitch path
+      sed -i $out/${perl538.libPrefix}/${perl538.version}/PVE/API2/Network.pm \
+        -e "s|ovs-vsctl'|${openvswitch}/bin/ovs-vsctl'|"
+
       find $out/bin -type f | xargs sed -i \
         -e "/ENV{'PATH'}/d"
 
