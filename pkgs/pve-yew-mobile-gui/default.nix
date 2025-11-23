@@ -9,10 +9,11 @@
   openssl,
   fetchgit,
   perl538,
-  perlmod,
+  proxmox-wasm-builder,
   apt,
   mkRegistry,
   pve-update-script,
+  breakpointHook
 }:
 
 let
@@ -20,15 +21,15 @@ let
   registry = mkRegistry sources;
 in
 
-stdenv.mkDerivation rec {
+stdenv.mkDerivation (finalAttrs: {
   pname = "pve-yew-mobile-gui";
-  version = "0.6.2";
+  version = "0.6.4";
 
   src = fetchgit {
     url = "git://git.proxmox.com/git/ui/pve-yew-mobile-gui.git";
-    rev = "4e22axx15e892f75c8c96998feaf1e535b7167b8";
-    hash = "sha256-AzH1rZFqEH8sovZZfJykvsEmCedEZWigQFHWHl6/PdE=";
-    fetchSubmodules = false;
+    rev = "c0c8d4863387c28fa8db2c31ce65779bbaf39318";
+    hash = "sha256-EE73KfzXgcI9n5bkC1tAo2EVWGpIk/FzXJjkEDDMZ6E=";
+    fetchSubmodules = true;
   };
 
   cargoDeps = rustPlatform.importCargoLock {
@@ -37,9 +38,15 @@ stdenv.mkDerivation rec {
   };
 
   postPatch = ''
+    # Remove the `[patch.crates-io]` section from original Cargo.toml
+    sed -i '/\[patch.crates-io\]/,/^\[/d' Cargo.toml
+
     rm .cargo/config.toml
     cat ${registry}/cargo-patches.toml >> Cargo.toml
     ln -s ${./Cargo.lock} Cargo.lock
+
+    substituteInPlace ./Makefile \
+      --replace-fail 'include /usr/share/dpkg/default.mk' ""
   '';
 
   nativeBuildInputs = [
@@ -48,11 +55,13 @@ stdenv.mkDerivation rec {
     rustc
     perl538
     apt
+    breakpointHook
   ];
 
   buildInputs = [
     libuuid
     pkg-config
+    proxmox-wasm-builder
     openssl
     registry
     apt
@@ -62,7 +71,7 @@ stdenv.mkDerivation rec {
     "BUILDIR=$NIX_BUILD_TOP"
     "BUILD_MODE=release"
     "DESTDIR=$(out)"
-    "GITVERSION:=${src.rev}"
+    "GITVERSION:=${finalAttrs.src.rev}"
   ];
 
   passthru = {
@@ -81,4 +90,4 @@ stdenv.mkDerivation rec {
     ];
     platforms = platforms.linux;
   };
-}
+})
