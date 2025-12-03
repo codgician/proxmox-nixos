@@ -125,6 +125,7 @@ perl540.pkgs.toPerlModule (
         -e "s|/usr/share/javascript|${pve-http-server}/share/javascript|" \
         -e "s|/usr/share/pve-yew-mobile-gui|${pve-yew-mobile-gui}/share/pve-yew-mobile-gui|" \
         -e "s|/usr/share/pve-yew-mobile-i18n|${proxmox-i18n}/share/pve-yew-mobile-i18n|" \
+        -e "s|/usr/share/bootstrap-html|${pve-http-server}/share/bootstrap-html|" \
         -e "s|/usr/share/fonts-font-awesome|${pve-http-server}/share/fonts-font-awesome|" \
         -e "s|/usr/share/fonts-font-logos|${pve-http-server}/share/fonts-font-logos|" \
         -e "s|/usr/share/pve-i18n|${proxmox-i18n}/share/pve-i18n|" \
