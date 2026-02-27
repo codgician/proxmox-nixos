@@ -8,6 +8,7 @@
   meson,
   cacert,
   git,
+  fuse3,
   pve-update-script,
 }:
 
@@ -60,7 +61,7 @@ in
 
   sourceRoot = "${src.name}/qemu";
 
-  buildInputs = old.buildInputs ++ [ proxmox-backup-qemu ];
+  buildInputs = old.buildInputs ++ [ proxmox-backup-qemu fuse3 ];
   propagatedBuildInputs = [ proxmox-backup-qemu ];
 
   preBuild = ''
@@ -73,6 +74,8 @@ in
     perlEnv
     pkg-config
   ];
+
+  configureFlags = old.configureFlags ++ [ "--enable-fuse" ];
 
   # Generate cpu flag files and machine versions json
   # This is done in /debian/rules of pve-qemu, and needed by pve-qemu-server
