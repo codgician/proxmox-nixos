@@ -5,6 +5,12 @@
 let
   callPackage = pkgs.lib.callPackageWith (pkgs // ours);
 
+  # Patched swtpm with FUSE export support for qcow2 TPM state files
+  # https://lore.proxmox.com/pve-devel/20251113144131.560130-3-f.ebner@proxmox.com/
+  patchedSwtpm = pkgs.swtpm.overrideAttrs (old: {
+    patches = (old.patches or [ ]) ++ [ ../modules/proxmox-ve/patches/swtpm-fuse-export.patch ];
+  });
+
   ours = {
     authenpam = callPackage ./perl-modules/authenpam { };
     datadumper = callPackage ./perl-modules/datadumper { };
@@ -55,7 +61,7 @@ let
     pve-network = callPackage ./pve-network { };
     pve-novnc = callPackage ./pve-novnc { };
     pve-qemu = callPackage ./pve-qemu { };
-    pve-qemu-server = callPackage ./pve-qemu-server { };
+    pve-qemu-server = callPackage ./pve-qemu-server { swtpm = patchedSwtpm; };
     pve-rados2 = callPackage ./pve-rados2 { };
     pve-rs = callPackage ./pve-rs { };
     pve-storage = callPackage ./pve-storage { };

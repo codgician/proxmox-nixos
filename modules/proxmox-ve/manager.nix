@@ -21,12 +21,12 @@ lib.mkIf cfg.enable {
         "corosync.service"
         "pve-cluster.service"
       ];
-      path = with pkgs; [
-        btrfs-progs
-        zfs
-        bashInteractive
-        cdrkit
-        swtpm
+      path = [
+        pkgs.btrfs-progs
+        pkgs.zfs
+        pkgs.bashInteractive
+        pkgs.cdrkit
+        pkgs.fuse3  # for fusermount3 needed by QEMU FUSE exports
       ];
       serviceConfig = {
         ExecStart = "${cfg.package}/bin/pvedaemon start";
@@ -89,10 +89,10 @@ lib.mkIf cfg.enable {
         "pve-ha-crm.service"
         "pve-ha-lrm.service"
       ];
-      path = with pkgs; [
-        bashInteractive
-        cdrkit
-        swtpm
+      path = [
+        pkgs.bashInteractive
+        pkgs.cdrkit
+        pkgs.fuse3  # for fusermount3 needed by QEMU FUSE exports
       ];
       unitConfig = {
         RefuseManualStart = true;
